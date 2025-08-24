@@ -1,0 +1,117 @@
+{
+  "visualTesting": {
+    "baseUrl": "http://localhost:3000",
+    "viewports": [
+      {
+        "name": "mobile",
+        "width": 375,
+        "height": 667
+      },
+      {
+        "name": "tablet", 
+        "width": 768,
+        "height": 1024
+      },
+      {
+        "name": "desktop",
+        "width": 1920,
+        "height": 1080
+      },
+      {
+        "name": "large-desktop",
+        "width": 2560,
+        "height": 1440
+      }
+    ],
+    "screenshotPath": "/.claude/frontend_screenshot_testing/",
+    "baselinePath": "/.claude/frontend_screenshot_testing/baselines/",
+    "reportsPath": "/.claude/frontend_screenshot_testing/test-reports/"
+  },
+  "testPages": [
+    {
+      "name": "home",
+      "path": "/",
+      "description": "Homepage with product highlights and navigation"
+    },
+    {
+      "name": "product-list",
+      "path": "/products",
+      "description": "Product catalog with filtering and search"
+    },
+    {
+      "name": "product-detail",
+      "path": "/products/sample-product",
+      "description": "Individual product page with details and purchase options"
+    },
+    {
+      "name": "shopping-cart",
+      "path": "/cart",
+      "description": "Shopping cart with item management"
+    },
+    {
+      "name": "checkout",
+      "path": "/checkout",
+      "description": "Checkout flow with payment and shipping"
+    },
+    {
+      "name": "user-profile",
+      "path": "/profile",
+      "description": "User account and profile management"
+    },
+    {
+      "name": "login",
+      "path": "/login",
+      "description": "User authentication page"
+    }
+  ],
+  "testComponents": [
+    {
+      "name": "primary-button",
+      "selector": "[data-testid='primary-button']",
+      "states": ["default", "hover", "active", "disabled"]
+    },
+    {
+      "name": "product-card",
+      "selector": "[data-testid='product-card']",
+      "states": ["default", "hover", "sold-out"]
+    },
+    {
+      "name": "navigation-menu",
+      "selector": "[data-testid='main-nav']",
+      "states": ["closed", "open"]
+    },
+    {
+      "name": "search-bar",
+      "selector": "[data-testid='search-bar']",
+      "states": ["empty", "filled", "searching"]
+    },
+    {
+      "name": "checkout-form",
+      "selector": "[data-testid='checkout-form']",
+      "states": ["empty", "valid", "invalid"]
+    }
+  ],
+  "accessibility": {
+    "requiredScore": 95,
+    "rules": [
+      "color-contrast",
+      "keyboard-navigation",
+      "focus-management",
+      "alt-text",
+      "aria-labels"
+    ]
+  },
+  "performance": {
+    "lighthouse": {
+      "performance": 85,
+      "accessibility": 95,
+      "bestPractices": 90,
+      "seo": 85
+    },
+    "coreWebVitals": {
+      "lcp": 2500,
+      "fid": 100,
+      "cls": 0.1
+    }
+  }
+}

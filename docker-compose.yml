@@ -1,0 +1,84 @@
+version: '3.8'
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: shopster-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: shopster_products_dev
+    volumes:
+      - mongodb_data:/data/db
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    networks:
+      - shopster-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: shopster-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    networks:
+      - shopster-network
+
+  product-service:
+    build: 
+      context: ./apps/product-service
+      dockerfile: Dockerfile
+    container_name: shopster-product-service
+    restart: unless-stopped
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/shopster_products_dev
+    depends_on:
+      - mongodb
+    networks:
+      - shopster-network
+
+  bff-orchestration:
+    build: 
+      context: ./apps/bff-orchestration
+      dockerfile: Dockerfile
+    container_name: shopster-bff-orchestration
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SERVICES_PRODUCT_SERVICE_URL: http://product-service:8082
+    depends_on:
+      - product-service
+    networks:
+      - shopster-network
+
+  frontend:
+    build: 
+      context: ./apps/frontend
+      dockerfile: Dockerfile
+    container_name: shopster-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      REACT_APP_BFF_URL: http://localhost:8081
+    depends_on:
+      - bff-orchestration
+    networks:
+      - shopster-network
+
+volumes:
+  mongodb_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  shopster-network:
+    driver: bridge

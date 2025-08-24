@@ -1,0 +1,457 @@
+# Ecommerce Platform Architecture Specification
+
+This document defines the technical architecture, infrastructure requirements, and system specifications for the ecommerce platform.
+
+## System Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Application Load Balancer               │
+│                        (nginx/HAProxy)                     │
+└─────────────────┬───────────────────┬─────────────────────┘
+                  │                   │
+        ┌─────────▼──────────┐ ┌──────▼──────────┐
+        │   Frontend App     │ │   Backend APIs  │
+        │   (React/nginx)    │ │  (Spring Boot)  │
+        └────────────────────┘ └─────────┬───────┘
+                                         │
+        ┌────────────────────────────────┼────────────────────┐
+        │                               │                    │
+┌───────▼────────┐              ┌──────▼──────┐    ┌────────▼────────┐
+│  User Service  │              │Item Service │    │Membership Service│
+│  (Auth/Users)  │              │ (Products)  │    │   (Future)      │
+└───────┬────────┘              └──────┬──────┘    └─────────────────┘
+        │                              │
+┌───────▼────────┐              ┌──────▼──────┐
+│  PostgreSQL    │              │  MongoDB    │
+│  (User Data)   │              │ (Products)  │
+└────────────────┘              └─────────────┘
+```
+
+## Infrastructure Components
+
+### Database Architecture
+
+#### Primary Database - PostgreSQL
+- **Purpose**: User management, authentication, orders, transactions
+- **Environment**: 
+  - **Development/Testing**: H2 in-memory database
+  - **Production**: PostgreSQL 15+
+- **Configuration**:
+  - Connection pooling with HikariCP
+  - Read replicas for scalability
+  - Automated backups and point-in-time recovery
+- **Schema**: Normalized relational data for ACID compliance
+
+#### Product Database - MongoDB
+- **Purpose**: Product catalog, inventory, pricing, search
+- **Environment**: MongoDB Atlas (free tier M0)
+- **Configuration**:
+  - Document-based storage for flexible product schemas
+  - Text search indexes for product search
+  - Geospatial indexes for location-based features
+- **Collections**: Products, Categories, Inventory, Reviews
+
+#### Cache Layer - Redis (Future)
+- **Purpose**: Session storage, API response caching, rate limiting
+- **Environment**: Redis Cloud (free tier)
+- **Use Cases**: JWT token blacklisting, product recommendations, cart data
+
+### Application Server Architecture
+
+#### HTTP Server - Spring WebFlux with Netty
+```yaml
+server:
+  port: 8080
+  netty:
+    connection-timeout: 20s
+    h2c-max-content-length: 0B
+  threads:
+    max: 200
+    min: 8
+```
+
+#### Custom Thread Pool Configuration
+```java
+@Configuration
+public class ThreadPoolConfig {
+    
+    @Bean("ioExecutor")
+    public Executor ioExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(10);
+        executor.setMaxPoolSize(50);
+        executor.setQueueCapacity(100);
+        executor.setThreadNamePrefix("io-pool-");
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        executor.initialize();
+        return executor;
+    }
+    
+    @Bean("dbExecutor") 
+    public Executor dbExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(5);
+        executor.setMaxPoolSize(20);
+        executor.setQueueCapacity(50);
+        executor.setThreadNamePrefix("db-pool-");
+        executor.initialize();
+        return executor;
+    }
+}
+```
+
+### Load Balancer Configuration
+
+#### nginx Configuration
+```nginx
+upstream backend {
+    server backend1:8080;
+    server backend2:8080;
+    server backend3:8080;
+}
+
+upstream frontend {
+    server frontend1:3000;
+    server frontend2:3000;
+}
+
+server {
+    listen 80;
+    
+    location /api/ {
+        proxy_pass http://backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_connect_timeout 30s;
+        proxy_send_timeout 30s;
+        proxy_read_timeout 30s;
+    }
+    
+    location / {
+        proxy_pass http://frontend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+```
+
+## Service Specifications
+
+### User Management Service
+
+#### Authentication & Authorization
+- **Framework**: Spring Security 6+ with JWT
+- **Password Hashing**: BCrypt with salt rounds = 12
+- **Session Management**: Stateless JWT with refresh tokens
+- **OAuth Integration**: Google, GitHub OAuth (future)
+
+#### Database Schema (PostgreSQL)
+```sql
+CREATE TABLE users (
+    id BIGSERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    role VARCHAR(20) DEFAULT 'USER',
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE user_sessions (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT REFERENCES users(id),
+    refresh_token VARCHAR(255) UNIQUE NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### Product Information Service
+
+#### Data Model (MongoDB)
+```javascript
+// Product Collection
+{
+  _id: ObjectId,
+  sku: String, // indexed, unique
+  name: String,
+  description: String,
+  category: {
+    id: String,
+    name: String,
+    path: String // "Electronics/Computers/Laptops"
+  },
+  pricing: {
+    base_price: Number,
+    sale_price: Number,
+    currency: String,
+    tax_inclusive: Boolean
+  },
+  inventory: {
+    quantity: Number,
+    reserved: Number,
+    low_stock_threshold: Number
+  },
+  attributes: {
+    brand: String,
+    color: String,
+    size: String,
+    weight: Number,
+    dimensions: {
+      length: Number,
+      width: Number,
+      height: Number
+    }
+  },
+  images: [String], // URLs
+  tags: [String],
+  search_terms: [String],
+  is_active: Boolean,
+  created_at: Date,
+  updated_at: Date
+}
+```
+
+### Service Communication
+
+#### Inter-Service Communication
+- **Protocol**: HTTP/REST with JSON
+- **Service Discovery**: Spring Cloud Discovery (Eureka) or Consul
+- **Circuit Breaker**: Resilience4j
+- **Timeout Configuration**: 5s connection, 30s read timeout
+- **Retry Policy**: 3 retries with exponential backoff
+
+#### API Gateway Pattern (Future)
+- **Tool**: Spring Cloud Gateway or Kong
+- **Features**: Rate limiting, authentication, request/response transformation
+- **Load Balancing**: Round-robin with health checks
+
+## Containerization Strategy
+
+### Docker Configuration
+
+#### Backend Service Dockerfile
+```dockerfile
+FROM openjdk:17-jdk-slim AS builder
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN ./mvnw clean package -DskipTests
+
+FROM openjdk:17-jre-slim
+WORKDIR /app
+COPY --from=builder /app/target/*.jar app.jar
+EXPOSE 8080
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:8080/actuator/health || exit 1
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+```
+
+#### Frontend Dockerfile
+```dockerfile
+FROM node:18-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM nginx:alpine
+COPY --from=builder /app/build /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/nginx.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+### Docker Compose (Development)
+```yaml
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: ecommerce
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  mongodb:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  backend:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    environment:
+      - DATABASE_URL=jdbc:postgresql://postgres:5432/ecommerce
+      - MONGO_URI=mongodb://mongodb:27017/products
+    depends_on:
+      - postgres
+      - mongodb
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  mongodb_data:
+```
+
+## CI/CD Pipeline
+
+### GitHub Actions Configuration
+```yaml
+# .github/workflows/ci-cd.yml
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+      - name: Run tests
+        run: cd backend && mvn test
+      - name: Generate test report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: Backend Tests
+          path: backend/target/surefire-reports/*.xml
+          reporter: java-junit
+
+  test-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install dependencies
+        run: cd frontend && npm ci
+      - name: Run tests
+        run: cd frontend && npm test -- --coverage --watchAll=false
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          directory: ./frontend/coverage
+
+  build-and-deploy:
+    needs: [test-backend, test-frontend]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build and push Docker images
+        env:
+          DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
+        run: |
+          docker build -t $DOCKER_REGISTRY/backend:${{ github.sha }} ./backend
+          docker build -t $DOCKER_REGISTRY/frontend:${{ github.sha }} ./frontend
+          docker push $DOCKER_REGISTRY/backend:${{ github.sha }}
+          docker push $DOCKER_REGISTRY/frontend:${{ github.sha }}
+```
+
+## Monitoring & Observability
+
+### Health Checks
+- **Endpoint**: `/actuator/health`
+- **Checks**: Database connectivity, external service availability
+- **Response Time**: < 500ms
+
+### Metrics Collection
+- **Framework**: Micrometer with Prometheus
+- **Custom Metrics**: Business KPIs, API response times, error rates
+- **Dashboards**: Grafana dashboards for system monitoring
+
+### Logging Strategy
+```yaml
+logging:
+  level:
+    com.ecommerce: INFO
+    org.springframework.security: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%X{traceId},%X{spanId}] %logger{36} - %msg%n"
+  file:
+    name: logs/application.log
+    max-size: 10MB
+    max-history: 30
+```
+
+## Security Configuration
+
+### CORS Configuration
+```java
+@Configuration
+public class CorsConfig {
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(true);
+        
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/api/**", configuration);
+        return source;
+    }
+}
+```
+
+### Rate Limiting
+- **Implementation**: Redis-based sliding window
+- **Limits**: 100 requests per minute per IP
+- **API Keys**: 1000 requests per hour for authenticated users
+
+## Scalability Considerations
+
+### Horizontal Scaling
+- **Stateless Services**: All services designed for horizontal scaling
+- **Session Storage**: Redis for shared session state
+- **File Storage**: AWS S3 or equivalent for product images
+
+### Performance Optimization
+- **Database Connection Pooling**: HikariCP with 20 max connections
+- **Caching Strategy**: Redis for API responses and session data
+- **CDN**: CloudFront or equivalent for static assets
+
+This architecture provides a solid foundation for a scalable, maintainable ecommerce platform with modern best practices.

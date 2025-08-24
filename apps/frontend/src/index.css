@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import Inter font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+
+/* Base styles */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+  }
+}
+
+/* Component styles */
+@layer components {
+  .btn-primary {
+    @apply bg-accent-500 hover:bg-accent-600 text-white border border-accent-500 hover:border-accent-600 px-6 py-3 font-medium rounded-lg transition-colors duration-150;
+  }
+
+  .btn-secondary {
+    @apply bg-transparent hover:bg-primary-50 text-primary-700 border border-primary-300 hover:border-primary-400 px-6 py-3 font-medium rounded-lg transition-colors duration-150;
+  }
+
+  .card {
+    @apply bg-white border border-primary-200 rounded-xl p-6 shadow-sm hover:shadow-md hover:border-primary-300 transition-all duration-150;
+  }
+
+  .form-input {
+    @apply bg-white border border-primary-300 rounded-lg px-4 py-3 text-base text-primary-800 placeholder-primary-400 focus:outline-none focus:border-accent-500 focus:ring-4 focus:ring-accent-500/10 transition-colors duration-150;
+  }
+
+  .container {
+    @apply max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+}
+
+/* Global styles */
+body {
+  @apply font-sans text-primary-800 bg-white antialiased;
+}
+
+* {
+  @apply box-border;
+}
+
+/* Utility for line clamping */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Ensure proper aspect ratio for product images */
+.aspect-square {
+  aspect-ratio: 1 / 1;
+}
+
+/* Custom scrollbar for better UX */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}

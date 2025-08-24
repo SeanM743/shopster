@@ -1,0 +1,74 @@
+spring:
+  application:
+    name: product-service
+  
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/shopster_products
+      database: shopster_products
+      
+  cache:
+    caffeine:
+      spec: maximumSize=1000,expireAfterWrite=10m,recordStats
+
+server:
+  port: 8082
+  servlet:
+    context-path: /
+
+# Management and Monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,caches
+  endpoint:
+    health:
+      show-details: always
+  info:
+    env:
+      enabled: true
+
+# Logging
+logging:
+  level:
+    com.shopster.product: INFO
+    org.springframework.data.mongodb: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# Application Info
+info:
+  app:
+    name: Shopster Product Service
+    description: Product catalog microservice for Shopster ecommerce platform
+    version: 1.0.0
+
+---
+# Development Profile
+spring:
+  config:
+    activate:
+      on-profile: dev
+  
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/shopster_products_dev
+      database: shopster_products_dev
+
+logging:
+  level:
+    com.shopster.product: DEBUG
+    org.springframework.data.mongodb: DEBUG
+
+---
+# Test Profile
+spring:
+  config:
+    activate:
+      on-profile: test
+      
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/shopster_products_test
+      database: shopster_products_test
