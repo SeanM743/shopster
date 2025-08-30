@@ -18,7 +18,7 @@ import java.util.Map;
 @Service
 public class JwtService {
     
-    @Value("${jwt.secret:MySecretKeyForJWTTokenGenerationThatIsVeryLongAndSecure123456789}")
+    @Value("${jwt.secret}")
     private String secretKey;
     
     @Value("${jwt.access-token-expiration:3600}") // 1 hour in seconds

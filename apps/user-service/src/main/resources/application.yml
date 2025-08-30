@@ -22,7 +22,7 @@ spring:
         order_inserts: true
         order_updates: true
         
-  flyway:
+    flyway:
     enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: true
@@ -39,7 +39,7 @@ server:
 
 # JWT Configuration
 jwt:
-  secret: ${JWT_SECRET:MySecretKeyForJWTTokenGenerationThatIsVeryLongAndSecure123456789}
+  secret: ${JWT_SECRET:vWFsRg7CERm9PhLVk2g1rhA1xZYXMtAOFahPTbqE0s0=}
   access-token-expiration: ${JWT_ACCESS_EXPIRATION:3600}
   refresh-token-expiration: ${JWT_REFRESH_EXPIRATION:604800}
 
