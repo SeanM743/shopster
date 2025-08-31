@@ -56,12 +56,7 @@ services:
       placement:
         constraints: [node.hostname == host1]
   
-  bff-service:
-    environment:
-      - SERVICES_PRODUCT_SERVICE_URL=http://product-service:8082
-    deploy:
-      placement:
-        constraints: [node.hostname == host2]
+  
 
 networks:
   shopster-network:
@@ -76,9 +71,7 @@ networks:
 MONGODB_URI=mongodb://db-host:27017/shopster_products
 EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://discovery-host:8761/eureka
 
-# Host 2 - BFF Service  
-SERVICES_PRODUCT_SERVICE_URL=http://host1:8082
-SERVICES_USER_SERVICE_URL=http://host3:8083
+
 
 # Host 3 - User Service
 POSTGRES_URI=postgresql://db-host:5432/shopster_users
@@ -101,10 +94,10 @@ docker stack deploy -c docker-compose.yml shopster
 #### Pattern 1: Microservices per Host
 ```
 Host 1: Frontend + CDN
-Host 2: BFF + API Gateway  
-Host 3: Product Service + MongoDB
-Host 4: User Service + PostgreSQL
-Host 5: Shared Services (Redis, Elasticsearch)
+Host 2: Product Service + MongoDB
+Host 3: User Service + PostgreSQL
+Host 4: Cart Service + Redis
+Host 5: Membership Service + PostgreSQL
 ```
 
 #### Pattern 2: Service Mesh (Istio)
@@ -139,10 +132,7 @@ upstream product_service {
     server host3:8082 backup;
 }
 
-upstream bff_service {
-    server host1:8081;
-    server host2:8081;
-}
+
 
 server {
     listen 80;
@@ -153,7 +143,7 @@ server {
     }
     
     location /api/v1 {
-        proxy_pass http://bff_service;
+        proxy_pass http://shopster-api-gateway:8080;
     }
 }
 ```

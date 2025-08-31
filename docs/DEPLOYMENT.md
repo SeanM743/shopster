@@ -47,7 +47,7 @@ REDIS_URI=redis://redis:6379
 # Service URLs
 PRODUCT_SERVICE_URL=http://product-service:8082
 USER_SERVICE_URL=http://user-service:8083
-BFF_SERVICE_URL=http://bff-orchestration:8081
+
 
 # Security
 JWT_SECRET=your-super-secret-jwt-key-here
@@ -69,24 +69,8 @@ services:
   # Frontend
   frontend:
     build: ./apps/frontend
-    ports:
-      - "3000:3000"
-    environment:
-      - REACT_APP_BFF_URL=http://localhost:8081
     depends_on:
-      - bff-orchestration
-
-  # BFF Orchestration  
-  bff-orchestration:
-    build: ./apps/bff-orchestration
-    ports:
-      - "8081:8081"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - SERVICES_PRODUCT_SERVICE_URL=http://product-service:8082
-    depends_on:
-      - product-service
-      - user-service
+      - nginx # Frontend depends on nginx for routing
 
   # Product Service
   product-service:
@@ -107,6 +91,28 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/shopster_users
+    depends_on:
+      - postgres
+
+  # Cart Service
+  cart-service:
+    build: ./apps/cart-service
+    ports:
+      - "8085:8085"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_REDIS_HOST=redis
+    depends_on:
+      - redis
+
+  # Membership Service
+  membership-service:
+    build: ./apps/membership-service
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/shopster_users # Assuming same DB as user-service for now
     depends_on:
       - postgres
 
@@ -328,16 +334,7 @@ spec:
             name: frontend-service
             port:
               number: 3000
-  - host: api.shopster.com  
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: bff-service
-            port:
-              number: 8081
+  
 ```
 
 ### Deployment Commands

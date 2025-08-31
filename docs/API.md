@@ -4,80 +4,16 @@
 The Shopster platform uses a microservices architecture with RESTful APIs. This document covers all available endpoints.
 
 ## Base URLs
-- **BFF (Frontend API)**: `http://localhost:8081`
+
 - **Product Service**: `http://localhost:8082`  
 - **User Service**: `http://localhost:8083`
+- **Membership Service**: `http://localhost:8084`
+- **Cart Service**: `http://localhost:8085`
 
 ## Authentication
 ```bash
 # JWT Token required for protected endpoints
 Authorization: Bearer <jwt_token>
-```
-
----
-
-## 🏠 BFF Orchestration API
-
-### Homepage Endpoints
-
-#### Get Hero Content
-```http
-GET /api/v1/homepage/hero-content
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "cards": [
-      {
-        "id": "hero-1",
-        "title": "Summer Sale",
-        "description": "Up to 50% off selected items",
-        "imageUrl": "https://example.com/hero1.jpg",
-        "ctaText": "Shop Now",
-        "ctaLink": "/categories/sale",
-        "sortOrder": 1
-      }
-    ]
-  }
-}
-```
-
-#### Get Product Carousel
-```http
-GET /api/v1/homepage/product-carousel/{carouselType}?limit=15
-```
-
-**Parameters:**
-- `carouselType`: `featured`, `trending`, `recommended`, `random`
-- `limit`: Number of products (1-50)
-
-**Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "title": "Featured Products",
-    "products": [
-      {
-        "id": "product-1",
-        "name": "iPhone 15 Pro",
-        "brand": "Apple",
-        "category": "Electronics",
-        "price": 999.99,
-        "salePrice": 949.99,
-        "imageUrl": "https://images.unsplash.com/...",
-        "rating": 4.8,
-        "reviewCount": 256,
-        "inStock": true,
-        "badge": "sale"
-      }
-    ],
-    "viewAllLink": "/products?category=featured"
-  }
-}
 ```
 
 ---
@@ -146,7 +82,7 @@ GET /api/v1/products/category/Electronics?page=0&size=20
 
 ---
 
-## 👤 User Service API (Planned)
+## 👤 User Service API
 
 ### Authentication Endpoints
 
@@ -213,7 +149,131 @@ Content-Type: application/json
 
 ---
 
-## 🛒 Shopping Cart API (Planned)
+## 💎 Membership Service API
+
+### Shopster+ Plan Endpoints
+
+#### Get All Membership Plans
+```http
+GET /api/membership/plans
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "planCode": "SHOPSTER_PLUS_MONTHLY",
+      "name": "Shopster+ Monthly",
+      "description": "Monthly Shopster+ membership with 1-week free trial",
+      "price": 9.99,
+      "formattedPrice": "$9.99",
+      "billingCycle": "MONTHLY",
+      "billingCycleDisplay": "Monthly",
+      "trialDays": 7,
+      "trialDescription": "7-day free trial",
+      "planType": "STANDARD",
+      "active": true,
+      "features": [
+        "Free shipping on all orders",
+        "Early access to sales",
+        "Exclusive member-only deals",
+        "Priority customer support",
+        "Monthly surprise box",
+        "Cancel anytime"
+      ]
+    }
+  ]
+}
+```
+
+#### Get Plan by Code
+```http
+GET /api/membership/plans/{planCode}
+```
+
+### Subscription Endpoints
+
+#### Create Subscription
+```http
+POST /api/membership/subscriptions
+Content-Type: application/json
+
+{
+  "userId": 123,
+  "planCode": "SHOPSTER_PLUS_MONTHLY",
+  "paymentMethodId": "card_demo_123",
+  "paymentMethodType": "CREDIT_CARD",
+  "autoRenew": true
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "userId": 123,
+    "plan": { /* plan object */ },
+    "status": "TRIALING",
+    "trialStartDate": "2024-01-01T00:00:00Z",
+    "trialEndDate": "2024-01-08T00:00:00Z",
+    "amount": 9.99,
+    "paymentMethodId": "card_demo_123",
+    "paymentMethodType": "CREDIT_CARD",
+    "autoRenew": true,
+    "createdAt": "2024-01-01T00:00:00Z"
+  }
+}
+```
+
+#### Get User's Active Subscription
+```http
+GET /api/membership/subscriptions/user/{userId}
+```
+
+#### Get User's Subscription History
+```http
+GET /api/membership/subscriptions/user/{userId}/history
+```
+
+#### Cancel Subscription
+```http
+PUT /api/membership/subscriptions/{subscriptionId}/cancel?reason=User%20requested
+```
+
+#### Check Membership Status
+```http
+GET /api/membership/users/{userId}/status
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": true
+}
+```
+
+### Subscription Status Values
+- `PENDING` - Subscription created, not yet activated
+- `TRIALING` - Currently in free trial period
+- `ACTIVE` - Active paid subscription
+- `CANCELLED` - Cancelled by user or admin
+- `EXPIRED` - Subscription expired
+- `SUSPENDED` - Temporarily suspended
+
+### Plan Types
+- `TRIAL` - Free trial only
+- `STANDARD` - Monthly plan ($9.99/month)
+- `PREMIUM` - Annual plan ($99.00/year)
+
+---
+
+## 🛒 Shopping Cart API
 
 ### Cart Endpoints
 
@@ -348,14 +408,22 @@ GET /actuator/info
 # Get random products
 curl http://localhost:8082/api/v1/products/random?limit=15
 
-# Get featured products via BFF
-curl http://localhost:8081/api/v1/homepage/product-carousel/featured?limit=10
+
 
 # Search products
 curl "http://localhost:8082/api/v1/products/search?q=iPhone"
 
 # Health check
 curl http://localhost:8082/actuator/health
+
+# Get Shopster+ plans
+curl http://localhost:8084/api/membership/plans
+
+# Get user's active subscription
+curl http://localhost:8084/api/membership/subscriptions/user/123
+
+# Check membership status
+curl http://localhost:8084/api/membership/users/123/status
 ```
 
 ### Rate Limiting

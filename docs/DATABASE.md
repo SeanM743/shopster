@@ -169,7 +169,7 @@ The database is seeded with 50 products across 5 categories:
 
 ---
 
-## 🐘 PostgreSQL - User Database (Planned)
+## 🐘 PostgreSQL - User Database
 
 **Database**: `shopster_users`
 
@@ -295,7 +295,7 @@ CREATE TABLE order_items (
 
 ---
 
-## 🔴 Redis - Cache & Sessions (Planned)
+## 🔴 Redis - Cache & Sessions
 
 ### Session Storage
 ```
