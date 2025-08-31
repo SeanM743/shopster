@@ -2,32 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Import Inter font */
+/* Import modern font stack - Elegant & Contemporary */
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap');
 
 /* Base styles */
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 252 83% 20%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 252 83% 20%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
+    --popover-foreground: 252 83% 20%;
+    --primary: 261 71% 63%;        /* Purple primary */
+    --primary-foreground: 254 92% 95%;
+    --secondary: 252 100% 95%;      /* Light purple */
+    --secondary-foreground: 261 63% 25%;
+    --muted: 252 100% 95%;
+    --muted-foreground: 252 10% 46%;
+    --accent: 24 70% 56%;           /* Warm orange accent */
+    --accent-foreground: 252 100% 95%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 252 89% 91%;          /* Light purple border */
+    --input: 252 89% 91%;
+    --ring: 261 71% 63%;            /* Purple ring */
     --radius: 0.5rem;
   }
 }
@@ -77,20 +78,20 @@ body {
   aspect-ratio: 1 / 1;
 }
 
-/* Custom scrollbar for better UX */
+/* Custom scrollbar with purple theme */
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #f5f3ff;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
+  background: #c4b5fd;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #a1a1a1;
+  background: #a78bfa;
 }

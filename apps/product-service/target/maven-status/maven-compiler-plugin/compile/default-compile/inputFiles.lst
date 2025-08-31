@@ -3,6 +3,7 @@
 /home/seanmah/ecommerce/apps/product-service/src/main/java/com/shopster/product/dto/ProductDto.java
 /home/seanmah/ecommerce/apps/product-service/src/main/java/com/shopster/product/dto/ShippingInfoDto.java
 /home/seanmah/ecommerce/apps/product-service/src/main/java/com/shopster/product/dto/SeoInfoDto.java
+/home/seanmah/ecommerce/apps/product-service/src/main/java/com/shopster/product/config/WebConfig.java
 /home/seanmah/ecommerce/apps/product-service/src/main/java/com/shopster/product/dto/ProductVariantDto.java
 /home/seanmah/ecommerce/apps/product-service/src/main/java/com/shopster/product/dto/RatingDto.java
 /home/seanmah/ecommerce/apps/product-service/src/main/java/com/shopster/product/ProductServiceApplication.java

@@ -1,14 +1,13 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { productApi, ProductSummary } from '../services/api';
-import { ProductGrid } from '../components/ProductGrid';
-import { Product } from '../components/ProductCard';
+import { ProductGrid } from '../components/organisms/ProductGrid';
+import { Product } from '../components/organisms/ProductCard';
 
 const HomePage: React.FC = () => {
   const { data: randomProducts, isLoading, error } = useQuery({
     queryKey: ['random-products'],
     queryFn: () => productApi.getRandomProducts(15),
-    staleTime: 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: false,
   });
 

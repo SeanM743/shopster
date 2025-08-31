@@ -6,29 +6,29 @@ INSERT INTO roles (name, description) VALUES
     ('MODERATOR', 'Content moderator with limited admin access');
 
 -- Insert default permissions for each role
-INSERT INTO permissions (role_id, resource, action) VALUES
+INSERT INTO permissions (name, role_id, resource, action) VALUES
     -- Admin permissions
-    ((SELECT id FROM roles WHERE name = 'ADMIN'), 'USER', 'CREATE'),
-    ((SELECT id FROM roles WHERE name = 'ADMIN'), 'USER', 'READ'),
-    ((SELECT id FROM roles WHERE name = 'ADMIN'), 'USER', 'UPDATE'),
-    ((SELECT id FROM roles WHERE name = 'ADMIN'), 'USER', 'DELETE'),
-    ((SELECT id FROM roles WHERE name = 'ADMIN'), 'ROLE', 'CREATE'),
-    ((SELECT id FROM roles WHERE name = 'ADMIN'), 'ROLE', 'READ'),
-    ((SELECT id FROM roles WHERE name = 'ADMIN'), 'ROLE', 'UPDATE'),
-    ((SELECT id FROM roles WHERE name = 'ADMIN'), 'ROLE', 'DELETE'),
+    ('ADMIN_USER_CREATE', (SELECT id FROM roles WHERE name = 'ADMIN'), 'USER', 'CREATE'),
+    ('ADMIN_USER_READ', (SELECT id FROM roles WHERE name = 'ADMIN'), 'USER', 'READ'),
+    ('ADMIN_USER_UPDATE', (SELECT id FROM roles WHERE name = 'ADMIN'), 'USER', 'UPDATE'),
+    ('ADMIN_USER_DELETE', (SELECT id FROM roles WHERE name = 'ADMIN'), 'USER', 'DELETE'),
+    ('ADMIN_ROLE_CREATE', (SELECT id FROM roles WHERE name = 'ADMIN'), 'ROLE', 'CREATE'),
+    ('ADMIN_ROLE_READ', (SELECT id FROM roles WHERE name = 'ADMIN'), 'ROLE', 'READ'),
+    ('ADMIN_ROLE_UPDATE', (SELECT id FROM roles WHERE name = 'ADMIN'), 'ROLE', 'UPDATE'),
+    ('ADMIN_ROLE_DELETE', (SELECT id FROM roles WHERE name = 'ADMIN'), 'ROLE', 'DELETE'),
     
     -- Customer permissions
-    ((SELECT id FROM roles WHERE name = 'CUSTOMER'), 'USER', 'READ'),
-    ((SELECT id FROM roles WHERE name = 'CUSTOMER'), 'USER', 'UPDATE'),
-    ((SELECT id FROM roles WHERE name = 'CUSTOMER'), 'ADDRESS', 'CREATE'),
-    ((SELECT id FROM roles WHERE name = 'CUSTOMER'), 'ADDRESS', 'READ'),
-    ((SELECT id FROM roles WHERE name = 'CUSTOMER'), 'ADDRESS', 'UPDATE'),
-    ((SELECT id FROM roles WHERE name = 'CUSTOMER'), 'ADDRESS', 'DELETE'),
+    ('CUSTOMER_USER_READ', (SELECT id FROM roles WHERE name = 'CUSTOMER'), 'USER', 'READ'),
+    ('CUSTOMER_USER_UPDATE', (SELECT id FROM roles WHERE name = 'CUSTOMER'), 'USER', 'UPDATE'),
+    ('CUSTOMER_ADDRESS_CREATE', (SELECT id FROM roles WHERE name = 'CUSTOMER'), 'ADDRESS', 'CREATE'),
+    ('CUSTOMER_ADDRESS_READ', (SELECT id FROM roles WHERE name = 'CUSTOMER'), 'ADDRESS', 'READ'),
+    ('CUSTOMER_ADDRESS_UPDATE', (SELECT id FROM roles WHERE name = 'CUSTOMER'), 'ADDRESS', 'UPDATE'),
+    ('CUSTOMER_ADDRESS_DELETE', (SELECT id FROM roles WHERE name = 'CUSTOMER'), 'ADDRESS', 'DELETE'),
     
     -- Support permissions
-    ((SELECT id FROM roles WHERE name = 'SUPPORT'), 'USER', 'READ'),
-    ((SELECT id FROM roles WHERE name = 'SUPPORT'), 'USER', 'UPDATE'),
+    ('SUPPORT_USER_READ', (SELECT id FROM roles WHERE name = 'SUPPORT'), 'USER', 'READ'),
+    ('SUPPORT_USER_UPDATE', (SELECT id FROM roles WHERE name = 'SUPPORT'), 'USER', 'UPDATE'),
     
     -- Moderator permissions
-    ((SELECT id FROM roles WHERE name = 'MODERATOR'), 'USER', 'READ'),
-    ((SELECT id FROM roles WHERE name = 'MODERATOR'), 'USER', 'UPDATE');
+    ('MODERATOR_USER_READ', (SELECT id FROM roles WHERE name = 'MODERATOR'), 'USER', 'READ'),
+    ('MODERATOR_USER_UPDATE', (SELECT id FROM roles WHERE name = 'MODERATOR'), 'USER', 'UPDATE');

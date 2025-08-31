@@ -35,9 +35,11 @@ CREATE TABLE user_roles (
 -- Create permissions table
 CREATE TABLE permissions (
     id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
     role_id BIGINT NOT NULL,
     resource VARCHAR(100) NOT NULL,
     action VARCHAR(50) NOT NULL,
+    description VARCHAR(255),
     FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
 );
 
@@ -45,13 +47,13 @@ CREATE TABLE permissions (
 CREATE TABLE addresses (
     id BIGSERIAL PRIMARY KEY,
     user_id BIGINT NOT NULL,
-    street_address VARCHAR(255) NOT NULL,
-    apartment VARCHAR(100),
+    address_line_1 VARCHAR(255) NOT NULL,
+    address_line_2 VARCHAR(100),
     city VARCHAR(100) NOT NULL,
-    state VARCHAR(100) NOT NULL,
+    state_province VARCHAR(100) NOT NULL,
     postal_code VARCHAR(20) NOT NULL,
     country VARCHAR(100) NOT NULL,
-    address_type VARCHAR(20) NOT NULL DEFAULT 'HOME',
+    type VARCHAR(20) NOT NULL DEFAULT 'HOME',
     is_default BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -62,10 +64,17 @@ CREATE TABLE addresses (
 CREATE TABLE user_sessions (
     id BIGSERIAL PRIMARY KEY,
     user_id BIGINT NOT NULL,
+    session_token VARCHAR(255) NOT NULL UNIQUE,
+    ip_address VARCHAR(45),
     refresh_token VARCHAR(500) NOT NULL UNIQUE,
+    user_agent VARCHAR(500),
     device_info VARCHAR(500),
+    device_type VARCHAR(50),
+    location VARCHAR(100),
     expires_at TIMESTAMP NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    last_accessed_at TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 

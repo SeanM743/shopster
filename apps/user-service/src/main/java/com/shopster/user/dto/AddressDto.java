@@ -10,20 +10,20 @@ public class AddressDto {
     
     private Long id;
     
-    @NotBlank(message = "Street address is required")
-    @Size(max = 255, message = "Street address must not exceed 255 characters")
-    private String streetAddress;
+    @NotBlank(message = "Address line 1 is required")
+    @Size(max = 255, message = "Address line 1 must not exceed 255 characters")
+    private String addressLine1;
     
-    @Size(max = 100, message = "Apartment number must not exceed 100 characters")
-    private String apartment;
+    @Size(max = 100, message = "Address line 2 must not exceed 100 characters")
+    private String addressLine2;
     
     @NotBlank(message = "City is required")
     @Size(max = 100, message = "City must not exceed 100 characters")
     private String city;
     
-    @NotBlank(message = "State is required")
-    @Size(max = 100, message = "State must not exceed 100 characters")
-    private String state;
+    @NotBlank(message = "State/Province is required")
+    @Size(max = 100, message = "State/Province must not exceed 100 characters")
+    private String stateProvince;
     
     @NotBlank(message = "Postal code is required")
     @Size(max = 20, message = "Postal code must not exceed 20 characters")
@@ -33,17 +33,17 @@ public class AddressDto {
     @Size(max = 100, message = "Country must not exceed 100 characters")
     private String country;
     
-    private String addressType;
+    private String type;
     
     private Boolean isDefault;
     
     // Constructors
     public AddressDto() {}
     
-    public AddressDto(String streetAddress, String city, String state, String postalCode, String country) {
-        this.streetAddress = streetAddress;
+    public AddressDto(String addressLine1, String city, String stateProvince, String postalCode, String country) {
+        this.addressLine1 = addressLine1;
         this.city = city;
-        this.state = state;
+        this.stateProvince = stateProvince;
         this.postalCode = postalCode;
         this.country = country;
     }
@@ -57,20 +57,20 @@ public class AddressDto {
         this.id = id;
     }
     
-    public String getStreetAddress() {
-        return streetAddress;
+    public String getAddressLine1() {
+        return addressLine1;
     }
     
-    public void setStreetAddress(String streetAddress) {
-        this.streetAddress = streetAddress;
+    public void setAddressLine1(String addressLine1) {
+        this.addressLine1 = addressLine1;
     }
     
-    public String getApartment() {
-        return apartment;
+    public String getAddressLine2() {
+        return addressLine2;
     }
     
-    public void setApartment(String apartment) {
-        this.apartment = apartment;
+    public void setAddressLine2(String addressLine2) {
+        this.addressLine2 = addressLine2;
     }
     
     public String getCity() {
@@ -81,12 +81,12 @@ public class AddressDto {
         this.city = city;
     }
     
-    public String getState() {
-        return state;
+    public String getStateProvince() {
+        return stateProvince;
     }
     
-    public void setState(String state) {
-        this.state = state;
+    public void setStateProvince(String stateProvince) {
+        this.stateProvince = stateProvince;
     }
     
     public String getPostalCode() {
@@ -105,12 +105,12 @@ public class AddressDto {
         this.country = country;
     }
     
-    public String getAddressType() {
-        return addressType;
+    public String getType() {
+        return type;
     }
     
-    public void setAddressType(String addressType) {
-        this.addressType = addressType;
+    public void setType(String type) {
+        this.type = type;
     }
     
     public Boolean getIsDefault() {

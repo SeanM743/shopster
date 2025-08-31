@@ -1,14 +1,16 @@
 import React from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { mockProductApi } from '../services/mockApi';
+import { mockProductApi, DetailedProduct } from '../services/mockApi';
 import { ArrowLeft, ShoppingCart, Heart, Share2, Star } from 'lucide-react';
+import { useCart } from '../contexts/CartContext';
 
 interface ProductDetailPageProps {}
 
 const ProductDetailPage: React.FC<ProductDetailPageProps> = () => {
   const { productId } = useParams<{ productId: string }>();
   const navigate = useNavigate();
+  const { addToCart } = useCart();
 
   const { data: product, isLoading, error } = useQuery({
     queryKey: ['product-detail', productId],
@@ -87,7 +89,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = () => {
 
   const formatPrice = (price: number) => `$${price.toFixed(2)}`;
   const hasDiscount = product.salePrice && product.salePrice < product.price;
-  const effectivePrice = hasDiscount ? product.salePrice : product.price;
+  const effectivePrice = hasDiscount ? (product.salePrice || product.price) : product.price;
   const savings = hasDiscount ? product.price - product.salePrice! : 0;
 
   return (
@@ -166,7 +168,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = () => {
                     )}
                   </div>
                   <div className="flex space-x-2 overflow-x-auto">
-                    {product.images.map((image, index) => (
+                    {product.images.map((image: string, index: number) => (
                       <img
                         key={index}
                         src={image}
@@ -271,6 +273,18 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = () => {
               {/* Action Buttons */}
               <div className="space-y-4 mb-6">
                 <button
+                  onClick={() => {
+                    if (product) {
+                      const cartProduct = {
+                        id: product.id,
+                        name: product.name,
+                        price: effectivePrice,
+                        imageUrl: product.imageUrl,
+                      };
+                      addToCart(cartProduct, 1);
+                      navigate('/cart');
+                    }
+                  }}
                   className={`w-full px-6 py-3 rounded-full font-semibold text-lg transition-colors duration-200 flex items-center justify-center ${
                     product.inStock
                       ? 'bg-blue-600 hover:bg-blue-700 text-white'

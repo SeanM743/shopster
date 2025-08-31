@@ -6,56 +6,56 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Shopster Brand Colors - Professional Blue & Gold
-        walmart: {
-          blue: {
-            50: '#eff6ff',
-            100: '#dbeafe',
-            200: '#bfdbfe',
-            300: '#93c5fd',
-            400: '#60a5fa',
-            500: '#2563eb', // Professional blue for Shopster
-            600: '#1d4ed8',
-            700: '#1e40af',
-            800: '#1e3a8a',
-            900: '#1e3a8a',
+        // Shopster Brand Colors - Exciting Purple & Complementary Accents
+        shopster: {
+          purple: {
+            50: '#f5f3ff',   // Lightest lavender
+            100: '#ede9fe',  // Light lavender
+            200: '#ddd6fe',  // Soft lavender
+            300: '#c4b5fd',  // Gentle purple
+            400: '#a78bfa',  // Medium lavender
+            500: '#8b5cf6',  // Primary purple
+            600: '#7c3aed',  // Deep purple
+            700: '#6d28d9',  // Rich purple
+            800: '#5b21b6',  // Dark purple
+            900: '#4c1d95',  // Deepest purple
           },
-          yellow: {
-            50: '#fffbeb',
-            100: '#fef3c7',
-            200: '#fde68a',
-            300: '#fcd34d',
-            400: '#fbbf24',
-            500: '#f59e0b', // Professional gold for Shopster
-            600: '#d97706',
-            700: '#b45309',
-            800: '#92400e',
-            900: '#78350f',
+          accent: {
+            50: '#fff7ed',
+            100: '#ffedd5',
+            200: '#fed7aa',
+            300: '#fdba74',
+            400: '#fb923c',
+            500: '#f97316',  // Warm orange-peach accent
+            600: '#ea580c',
+            700: '#c2410c',
+            800: '#9a3412',
+            900: '#7c2d12',
           },
         },
         primary: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#2563eb', // Shopster blue as primary
-          600: '#1d4ed8',
-          700: '#1e40af',
-          800: '#1e3a8a',
-          900: '#1e3a8a',
+          50: '#f5f3ff',   // Lightest lavender
+          100: '#ede9fe',  // Light lavender
+          200: '#ddd6fe',  // Soft lavender
+          300: '#c4b5fd',  // Gentle purple
+          400: '#a78bfa',  // Medium lavender
+          500: '#8b5cf6',  // Primary purple - exciting and modern
+          600: '#7c3aed',  // Deep purple
+          700: '#6d28d9',  // Rich purple
+          800: '#5b21b6',  // Dark purple
+          900: '#4c1d95',  // Deepest purple
         },
         accent: {
-          50: '#fffbeb',
-          100: '#fef3c7',
-          200: '#fde68a',
-          300: '#fcd34d',
-          400: '#fbbf24',
-          500: '#f59e0b', // Shopster gold as accent
-          600: '#d97706',
-          700: '#b45309',
-          800: '#92400e',
-          900: '#78350f',
+          50: '#fff7ed',
+          100: '#ffedd5',
+          200: '#fed7aa',
+          300: '#fdba74',
+          400: '#fb923c',
+          500: '#f97316',  // Warm orange-peach as accent - complements purple beautifully
+          600: '#ea580c',
+          700: '#c2410c',
+          800: '#9a3412',
+          900: '#7c2d12',
         },
         success: {
           50: '#f0fdf4',
@@ -84,8 +84,8 @@ module.exports = {
       },
       fontFamily: {
         sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
-        heading: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
-        mono: ['JetBrains Mono', 'monospace'],
+        heading: ['Sora', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+        mono: ['Fira Code', 'JetBrains Mono', 'monospace'],
       },
       fontSize: {
         xs: '0.75rem',

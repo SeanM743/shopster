@@ -9,6 +9,7 @@ Open a terminal and run the following command to start the databases (PostgreSQL
 ```bash
 docker compose up -d postgres mongodb redis
 ```
+**Important:** After starting the databases, please wait for at least 10-15 seconds to allow them to fully initialize before starting any backend services.
 
 ## 2. Start the Backend Microservices
 
@@ -30,6 +31,11 @@ For each of the following services, open a new terminal window and run the corre
     ```
 
 *   **Membership Service (port 8084):**
+    **Important:** Before starting the Membership Service, you MUST manually verify that the `shopster_membership_dev` database exists and is accessible. You can do this by running the following command in your terminal:
+    ```bash
+    docker compose exec postgres psql -U shopster_user -d shopster_membership_dev -c "SELECT 1;"
+    ```
+    If this command returns an error (e.g., "database does not exist" or "connection refused"), the database is not ready or accessible. Do NOT proceed with starting the Membership Service until this command runs successfully.
     ```bash
     cd apps/membership-service && mvn spring-boot:run -Dspring.profiles.active=dev
     ```

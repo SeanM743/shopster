@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Lock, Mail } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -61,14 +63,17 @@ const LoginPage: React.FC = () => {
       
       // Mock login - in real app, you'd call your authentication API
       console.log('Login attempted with:', formData);
-      
-      // Store mock user data (in real app, store JWT token)
-      localStorage.setItem('user', JSON.stringify({
-        id: '1',
+      // Create mock user data
+      const userData = {
+        id: '123',
         email: formData.email,
-        name: 'Demo User',
-        token: 'mock-jwt-token'
-      }));
+        name: formData.email.split('@')[0] || 'Demo User',
+        token: 'demo-jwt-token-123',
+        isShopsterPlusMember: false
+      };
+      
+      // Use AuthContext login method
+      login(userData);
       
       navigate('/');
     } catch (error) {
@@ -182,12 +187,12 @@ const LoginPage: React.FC = () => {
               </div>
 
               <div className="text-sm">
-                <a
-                  href="#"
+                <button
+                  type="button"
                   className="font-medium text-blue-600 hover:text-blue-500"
                 >
                   Forgot your password?
-                </a>
+                </button>
               </div>
             </div>
 

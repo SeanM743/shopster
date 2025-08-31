@@ -12,6 +12,7 @@ com/shopster/product/dto/SeoInfoDto.class
 com/shopster/product/document/Product$ProductVisibility.class
 com/shopster/product/document/ProductVariant$VariantTypes.class
 com/shopster/product/dto/ShippingInfoDto$DimensionsDto.class
+com/shopster/product/config/WebConfig$1.class
 com/shopster/product/dto/ProductImageDto.class
 com/shopster/product/document/Inventory$StockStatus.class
 com/shopster/product/document/Product$ProductStatus.class
@@ -19,6 +20,7 @@ com/shopster/product/dto/ProductSummaryDto.class
 com/shopster/product/document/ProductImage.class
 com/shopster/product/dto/RatingDto.class
 com/shopster/product/document/Product.class
+com/shopster/product/config/WebConfig.class
 com/shopster/product/service/ProductService.class
 com/shopster/product/dto/ProductDto.class
 com/shopster/product/repository/ProductRepository.class

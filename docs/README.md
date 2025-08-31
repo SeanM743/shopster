@@ -5,21 +5,28 @@ A modern, full-stack ecommerce platform built with microservices architecture, f
 ## 🏗️ Architecture Overview
 
 ```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│                 │    │                  │    │                 │
-│   React Frontend│◄──►│ BFF Orchestration│◄──►│ Product Service │
-│   (Port 3000)   │    │   (Port 8081)    │    │   (Port 8082)   │
-│                 │    │                  │    │                 │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-                                │                         │
-                                │                         │
-                                ▼                         ▼
-                       ┌──────────────────┐    ┌─────────────────┐
-                       │                  │    │                 │
-                       │  User Service    │    │   MongoDB       │
-                       │  (Port 8083)     │    │  (Port 27017)   │
-                       │                  │    │                 │
-                       └──────────────────┘    └─────────────────┘
+┌─────────────────┐    ┌─────────────────┐
+│                 │    │                 │
+│   React Frontend│◄──►│ API Gateway     │
+│   (Port 3000)   │    │   (Port 8080)   │
+│                 │    │                 │
+└─────────────────┘    └──────────┬───────┘
+                                  │
+                                  ▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│                 │    │                 │    │                 │
+│ Product Service │    │ User Service    │    │ Membership Svc  │
+│   (Port 8082)   │    │  (Port 8083)    │    │  (Port 8084)    │
+│                 │    │                 │    │                 │
+└──────────┬──────┘    └──────────┬──────┘    └──────────┬──────┘
+           │                      │                      │
+           ▼                      ▼                      ▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│                 │    │                 │    │                 │
+│   MongoDB       │    │  PostgreSQL     │    │  PostgreSQL     │
+│  (Port 27017)   │    │    (Users)      │    │ (Membership)    │
+│                 │    │                 │    │                 │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
 ## 📁 Project Structure
@@ -28,9 +35,11 @@ A modern, full-stack ecommerce platform built with microservices architecture, f
 shopster-ecommerce/
 ├── apps/
 │   ├── frontend/              # React + TypeScript + TailwindCSS
-│   ├── bff-orchestration/     # Spring Boot BFF Layer
+
 │   ├── product-service/       # Spring Boot + MongoDB
-│   └── user-service/          # Spring Boot + PostgreSQL
+│   ├── user-service/          # Spring Boot + PostgreSQL
+│   ├── membership-service/    # Spring Boot + PostgreSQL (Shopster+)
+│   └── cart-service/          # Spring Boot + Redis
 ├── docs/                      # Documentation
 ├── infrastructure/            # Docker & deployment configs
 ├── packages/                  # Shared libraries
@@ -68,9 +77,15 @@ shopster-ecommerce/
    cd apps/product-service
    mvn spring-boot:run -Dspring-boot.run.profiles=dev
    
-   # Start BFF Service
-   cd apps/bff-orchestration
+   # Start User Service
+   cd apps/user-service
    mvn spring-boot:run -Dspring-boot.run.profiles=dev
+   
+   # Start Membership Service
+   cd apps/membership-service
+   mvn spring-boot:run -Dspring-boot.run.profiles=dev
+   
+   
    
    # Start Frontend
    cd apps/frontend
@@ -79,9 +94,14 @@ shopster-ecommerce/
 
 ### Access Points
 - **Frontend**: http://localhost:3000
-- **BFF API**: http://localhost:8081
+- **Shopster+ Admin**: http://localhost:3000/admin/customers
+
 - **Product Service**: http://localhost:8082
+- **User Service**: http://localhost:8083
+- **Membership Service**: http://localhost:8084
+- **Cart Service**: http://localhost:8085
 - **MongoDB**: mongodb://localhost:27017
+- **PostgreSQL**: localhost:5432
 
 ## 🛠️ Technology Stack
 
@@ -112,6 +132,10 @@ shopster-ecommerce/
 - **Product Grid**: 5x3 responsive layout
 - **Real Images**: Professional product photography via Unsplash CDN
 - **Search & Filter**: MongoDB text search with aggregation
+- **Shopster+ Membership**: Complete subscription management system
+- **Customer Lookup**: Admin interface for subscription management
+- **Free Trials**: 7-day free trials for all membership plans
+- **Payment Integration**: Multiple payment method support
 - **Responsive Design**: Mobile-first approach
 - **Circuit Breakers**: Resilient service communication
 - **Caching**: Multi-level caching strategy
@@ -120,7 +144,6 @@ shopster-ecommerce/
 ### 🔄 In Progress
 - **User Authentication**: JWT-based auth system
 - **Shopping Cart**: Persistent cart with Redis
-- **Payment Integration**: Stripe/PayPal integration
 - **Order Management**: Complete order workflow
 
 ### 📋 Planned

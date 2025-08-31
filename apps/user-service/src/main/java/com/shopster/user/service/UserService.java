@@ -323,7 +323,7 @@ public class UserService {
     private void createUserSession(User user, String refreshToken, String deviceInfo) {
         // Remove existing session for the same device if it exists
         if (deviceInfo != null) {
-            sessionRepository.findByUserIdAndDeviceInfo(user.getId(), deviceInfo)
+            sessionRepository.findByUserIdAndDeviceType(user.getId(), deviceInfo)
                     .ifPresent(sessionRepository::delete);
         }
         
@@ -331,7 +331,7 @@ public class UserService {
         UserSession session = new UserSession();
         session.setUser(user);
         session.setRefreshToken(refreshToken);
-        session.setDeviceInfo(deviceInfo);
+        session.setDeviceType(deviceInfo);
         session.setExpiresAt(LocalDateTime.now().plusSeconds(jwtService.getRefreshTokenExpiration()));
         session.setCreatedAt(LocalDateTime.now());
         

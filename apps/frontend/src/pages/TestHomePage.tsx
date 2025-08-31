@@ -1,13 +1,14 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useQuery } from '@tanstack/react-query';
 import { mockProductApi, ProductSummary } from '../services/mockApi';
-import { ProductGrid } from '../components/ProductGrid';
-import { Product } from '../components/ProductCard';
+import { ProductGrid } from '../components/organisms/ProductGrid';
+import { Product } from '../components/organisms/ProductCard';
+import { useAuth } from '../contexts/AuthContext';
+import { ShoppingCart, User, Crown } from 'lucide-react';
 
 const TestHomePage: React.FC = () => {
-  const { user, logout, isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const { data: randomProducts, isLoading, error } = useQuery({
     queryKey: ['mock-random-products'],
     queryFn: () => mockProductApi.getRandomProducts(15),
@@ -39,44 +40,32 @@ const TestHomePage: React.FC = () => {
                 <Link to="/" className="text-2xl font-bold text-gray-900">Shopster</Link>
                 <span className="ml-2 text-sm bg-yellow-100 text-yellow-800 px-2 py-1 rounded">DEMO</span>
               </div>
-              <div className="flex items-center space-x-8">
-                <nav className="flex space-x-8">
-                  <Link to="/" className="text-gray-700 hover:text-gray-900">Home</Link>
-                  <a href="#" className="text-gray-700 hover:text-gray-900">Products</a>
-                  <a href="#" className="text-gray-700 hover:text-gray-900">Categories</a>
-                  <a href="#" className="text-gray-700 hover:text-gray-900">About</a>
-                </nav>
-                
-                {/* Auth Controls */}
-                <div className="flex items-center space-x-4">
-                  {isAuthenticated ? (
-                    <>
-                      <span className="text-sm text-gray-700">Hello, {user?.name}</span>
-                      <button
-                        onClick={logout}
-                        className="text-gray-700 hover:text-gray-900 text-sm"
-                      >
-                        Logout
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <Link 
-                        to="/login" 
-                        className="text-gray-700 hover:text-gray-900 text-sm"
-                      >
-                        Login
-                      </Link>
-                      <Link 
-                        to="/signup" 
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm"
-                      >
-                        Sign Up
-                      </Link>
-                    </>
-                  )}
-                </div>
-              </div>
+              <nav className="flex items-center space-x-6">
+                <Link to="/shopster-plus" className="flex items-center text-purple-600 hover:text-purple-700 font-medium">
+                  <Crown className="w-4 h-4 mr-1" />
+                  Shopster+
+                </Link>
+                <Link to="/cart" className="flex items-center text-gray-700 hover:text-gray-900">
+                  <ShoppingCart className="w-4 h-4 mr-1" />
+                  Cart
+                </Link>
+                {isAuthenticated ? (
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-600">Hello, {user?.name}</span>
+                    <Link to="/admin/customers" className="text-blue-600 hover:text-blue-700 text-sm">Admin</Link>
+                  </div>
+                ) : (
+                  <div className="flex items-center space-x-4">
+                    <Link to="/login" className="flex items-center text-gray-700 hover:text-gray-900">
+                      <User className="w-4 h-4 mr-1" />
+                      Login
+                    </Link>
+                    <Link to="/signup" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                      Sign Up
+                    </Link>
+                  </div>
+                )}
+              </nav>
             </div>
           </div>
         </header>
@@ -103,6 +92,16 @@ const TestHomePage: React.FC = () => {
                 <Link to="/" className="text-2xl font-bold text-gray-900">Shopster</Link>
                 <span className="ml-2 text-sm bg-red-100 text-red-800 px-2 py-1 rounded">ERROR</span>
               </div>
+              <nav className="flex items-center space-x-6">
+                <Link to="/shopster-plus" className="flex items-center text-purple-600 hover:text-purple-700 font-medium">
+                  <Crown className="w-4 h-4 mr-1" />
+                  Shopster+
+                </Link>
+                <Link to="/login" className="flex items-center text-gray-700 hover:text-gray-900">
+                  <User className="w-4 h-4 mr-1" />
+                  Login
+                </Link>
+              </nav>
             </div>
           </div>
         </header>
@@ -126,14 +125,34 @@ const TestHomePage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-gray-900">Shopster</h1>
+              <Link to="/" className="text-2xl font-bold text-gray-900">Shopster</Link>
               <span className="ml-2 text-sm bg-green-100 text-green-800 px-2 py-1 rounded">DEMO MODE</span>
             </div>
-            <nav className="flex space-x-8">
-              <a href="#" className="text-gray-700 hover:text-gray-900">Home</a>
-              <a href="#" className="text-gray-700 hover:text-gray-900">Products</a>
-              <a href="#" className="text-gray-700 hover:text-gray-900">Categories</a>
-              <a href="#" className="text-gray-700 hover:text-gray-900">About</a>
+            <nav className="flex items-center space-x-6">
+              <Link to="/shopster-plus" className="flex items-center text-purple-600 hover:text-purple-700 font-medium">
+                <Crown className="w-4 h-4 mr-1" />
+                Shopster+
+              </Link>
+              <Link to="/cart" className="flex items-center text-gray-700 hover:text-gray-900">
+                <ShoppingCart className="w-4 h-4 mr-1" />
+                Cart
+              </Link>
+              {isAuthenticated ? (
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-gray-600">Hello, {user?.name}</span>
+                  <Link to="/admin/customers" className="text-blue-600 hover:text-blue-700 text-sm">Admin</Link>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-4">
+                  <Link to="/login" className="flex items-center text-gray-700 hover:text-gray-900">
+                    <User className="w-4 h-4 mr-1" />
+                    Login
+                  </Link>
+                  <Link to="/signup" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                    Sign Up
+                  </Link>
+                </div>
+              )}
             </nav>
           </div>
         </div>
@@ -151,9 +170,18 @@ const TestHomePage: React.FC = () => {
             <p className="text-lg mb-8 text-blue-200">
               🎯 Demo: 15 products displayed in 5x3 grid layout
             </p>
-            <button className="bg-white text-blue-600 px-8 py-3 rounded-full font-semibold text-lg hover:bg-gray-100 transition-colors">
-              Shop Now
-            </button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button className="bg-white text-blue-600 px-8 py-3 rounded-full font-semibold text-lg hover:bg-gray-100 transition-colors">
+                Shop Now
+              </button>
+              <Link 
+                to="/shopster-plus" 
+                className="flex items-center justify-center bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-full font-semibold text-lg transition-colors"
+              >
+                <Crown className="w-5 h-5 mr-2" />
+                Try Shopster+ Free
+              </Link>
+            </div>
           </div>
         </div>
       </section>

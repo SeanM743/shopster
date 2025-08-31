@@ -7,6 +7,10 @@ import TestHomePage from './pages/TestHomePage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
+import ShopsterPlusPage from './pages/ShopsterPlusPage';
+import CartPage from './pages/CartPage';
+import CustomerLookupPage from './pages/CustomerLookupPage';
+import MembershipSignupPage from './pages/MembershipSignupPage';
 import './App.css';
 
 const queryClient = new QueryClient({
@@ -29,6 +33,10 @@ function App() {
               <Route path="/product/:productId" element={<ProductDetailPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignUpPage />} />
+              <Route path="/shopster-plus" element={<ShopsterPlusPage />} />
+              <Route path="/cart" element={<CartPage />} />
+              <Route path="/admin/customers" element={<CustomerLookupPage />} />
+              <Route path="/membership-signup" element={<MembershipSignupPage />} />
             </Routes>
           </div>
           <ReactQueryDevtools initialIsOpen={false} />

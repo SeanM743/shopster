@@ -31,7 +31,7 @@ public interface UserSessionRepository extends JpaRepository<UserSession, Long> 
     /**
      * Find session by user and device info
      */
-    Optional<UserSession> findByUserIdAndDeviceInfo(Long userId, String deviceInfo);
+    Optional<UserSession> findByUserIdAndDeviceType(Long userId, String deviceType);
     
     /**
      * Delete expired sessions

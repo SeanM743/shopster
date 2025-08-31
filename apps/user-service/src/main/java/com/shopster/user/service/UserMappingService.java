@@ -81,13 +81,13 @@ public class UserMappingService {
         
         AddressDto dto = new AddressDto();
         dto.setId(address.getId());
-        dto.setStreetAddress(address.getStreetAddress());
-        dto.setApartment(address.getApartment());
+        dto.setAddressLine1(address.getAddressLine1());
+        dto.setAddressLine2(address.getAddressLine2());
         dto.setCity(address.getCity());
-        dto.setState(address.getState());
+        dto.setStateProvince(address.getStateProvince());
         dto.setPostalCode(address.getPostalCode());
         dto.setCountry(address.getCountry());
-        dto.setAddressType(address.getAddressType().name());
+        dto.setType(address.getType().name());
         dto.setIsDefault(address.getIsDefault());
         
         return dto;
@@ -129,16 +129,16 @@ public class UserMappingService {
         
         Address address = new Address();
         address.setId(dto.getId());
-        address.setStreetAddress(dto.getStreetAddress());
-        address.setApartment(dto.getApartment());
+        address.setAddressLine1(dto.getAddressLine1());
+        address.setAddressLine2(dto.getAddressLine2());
         address.setCity(dto.getCity());
-        address.setState(dto.getState());
+        address.setStateProvince(dto.getStateProvince());
         address.setPostalCode(dto.getPostalCode());
         address.setCountry(dto.getCountry());
         address.setIsDefault(dto.getIsDefault());
         
-        if (dto.getAddressType() != null) {
-            address.setAddressType(Address.AddressType.valueOf(dto.getAddressType()));
+        if (dto.getType() != null) {
+            address.setType(Address.AddressType.valueOf(dto.getType()));
         }
         
         return address;

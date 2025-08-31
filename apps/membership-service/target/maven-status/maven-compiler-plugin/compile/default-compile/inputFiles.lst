@@ -1,0 +1,12 @@
+/home/seanmah/ecommerce/apps/membership-service/src/main/java/com/shopster/membership/config/DataSeeder.java
+/home/seanmah/ecommerce/apps/membership-service/src/main/java/com/shopster/membership/MembershipServiceApplication.java
+/home/seanmah/ecommerce/apps/membership-service/src/main/java/com/shopster/membership/service/MembershipService.java
+/home/seanmah/ecommerce/apps/membership-service/src/main/java/com/shopster/membership/controller/MembershipController.java
+/home/seanmah/ecommerce/apps/membership-service/src/main/java/com/shopster/membership/config/DatabaseConnectionProvider.java
+/home/seanmah/ecommerce/apps/membership-service/src/main/java/com/shopster/membership/entity/MembershipSubscription.java
+/home/seanmah/ecommerce/apps/membership-service/src/main/java/com/shopster/membership/dto/MembershipPlanDto.java
+/home/seanmah/ecommerce/apps/membership-service/src/main/java/com/shopster/membership/entity/MembershipPlan.java
+/home/seanmah/ecommerce/apps/membership-service/src/main/java/com/shopster/membership/repository/MembershipSubscriptionRepository.java
+/home/seanmah/ecommerce/apps/membership-service/src/main/java/com/shopster/membership/service/PaymentStubService.java
+/home/seanmah/ecommerce/apps/membership-service/src/main/java/com/shopster/membership/repository/MembershipPlanRepository.java
+/home/seanmah/ecommerce/apps/membership-service/src/main/java/com/shopster/membership/dto/CreateSubscriptionRequest.java

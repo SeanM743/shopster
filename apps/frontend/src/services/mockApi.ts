@@ -6,11 +6,11 @@ export interface ProductSummary {
   price: number;
   salePrice?: number;
   imageUrl: string;
-  images?: string[];
   rating?: number;
   reviewCount?: number;
   inStock: boolean;
   badge?: string;
+  quantity?: number;
 }
 
 export interface ProductCarousel {
@@ -19,7 +19,20 @@ export interface ProductCarousel {
   viewAllLink: string;
 }
 
-// Mock data matching our seeded products
+export interface DetailedProduct extends ProductSummary {
+  description: string;
+  specifications: { [key: string]: string };
+  images: string[];
+  variants?: {
+    id: string;
+    name: string;
+    price: number;
+    salePrice?: number;
+    inStock: boolean;
+  }[];
+}
+
+// Mock data with real product images from Unsplash
 const mockProducts: ProductSummary[] = [
   {
     id: "1",
@@ -29,11 +42,6 @@ const mockProducts: ProductSummary[] = [
     price: 999.99,
     salePrice: 949.99,
     imageUrl: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=400&fit=crop&crop=center",
-    images: [
-      "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=400&fit=crop&crop=center",
-      "https://images.unsplash.com/photo-1512499617640-c74ae3a79d37?w=400&h=400&fit=crop&crop=center",
-      "https://images.unsplash.com/photo-1603791440384-56cd371ee9a7?w=400&h=400&fit=crop&crop=center"
-    ],
     rating: 4.8,
     reviewCount: 256,
     inStock: true,
@@ -70,12 +78,7 @@ const mockProducts: ProductSummary[] = [
     brand: "Apple", 
     category: "Electronics",
     price: 1999.99,
-    imageUrl: "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=400&h=400&fit=crop&crop=center",
-    images: [
-      "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=400&h=400&fit=crop&crop=center",
-      "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop&crop=center",
-      "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=400&fit=crop&crop=center"
-    ],
+    imageUrl: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop&crop=center",
     rating: 4.9,
     reviewCount: 156,
     inStock: true,
@@ -101,7 +104,7 @@ const mockProducts: ProductSummary[] = [
     category: "Books", 
     price: 16.99,
     salePrice: 13.59,
-    imageUrl: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&h=400&fit=crop&crop=center",
+    imageUrl: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=400&fit=crop&crop=center",
     rating: 4.8,
     reviewCount: 289,
     inStock: true,
@@ -114,7 +117,7 @@ const mockProducts: ProductSummary[] = [
     category: "Sports & Outdoors",
     price: 39.99,
     salePrice: 34.99,
-    imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop&crop=center",
+    imageUrl: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop&crop=center",
     rating: 4.6,
     reviewCount: 178,
     inStock: true,
@@ -127,12 +130,7 @@ const mockProducts: ProductSummary[] = [
     category: "Electronics",
     price: 399.99,
     salePrice: 349.99,
-    imageUrl: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400&h=400&fit=crop&crop=center",
-    images: [
-      "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400&h=400&fit=crop&crop=center",
-      "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400&h=400&fit=crop&crop=center",
-      "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400&h=400&fit=crop&crop=center"
-    ],
+    imageUrl: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop&crop=center",
     rating: 4.7,
     reviewCount: 445,
     inStock: true,
@@ -169,7 +167,7 @@ const mockProducts: ProductSummary[] = [
     category: "Electronics",
     price: 749.99,
     salePrice: 699.99,
-    imageUrl: "https://images.unsplash.com/photo-1561154464-82e9adf32764?w=400&h=400&fit=crop&crop=center",
+    imageUrl: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&h=400&fit=crop&crop=center",
     rating: 4.6,
     reviewCount: 234,
     inStock: true,
@@ -195,7 +193,7 @@ const mockProducts: ProductSummary[] = [
     category: "Clothing",
     price: 180.00,
     salePrice: 144.00,
-    imageUrl: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&h=400&fit=crop&crop=center",
+    imageUrl: "https://images.unsplash.com/photo-1552346154-21d32810aba3?w=400&h=400&fit=crop&crop=center",
     rating: 4.5,
     reviewCount: 123,
     inStock: true,
@@ -238,11 +236,96 @@ export const mockProductApi = {
     };
   },
 
-  getProductById: async (id: string): Promise<ProductSummary | null> => {
+  getProductById: async (id: string): Promise<DetailedProduct> => {
     // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 800));
     
     const product = mockProducts.find(p => p.id === id);
-    return product || null;
+    if (!product) {
+      throw new Error(`Product with id ${id} not found`);
+    }
+
+    // Create detailed product with additional information
+    const detailedProduct: DetailedProduct = {
+      ...product,
+      description: `Experience the best of ${product.brand} with the ${product.name}. This premium ${product.category.toLowerCase()} item combines innovative technology with sleek design, delivering exceptional value and performance.`, 
+      specifications: {
+        "Brand": product.brand,
+        "Category": product.category,
+        "Model": product.name,
+        "Availability": product.inStock ? "In Stock" : "Out of Stock",
+        "Rating": product.rating ? `${product.rating}/5.0` : "Not Rated",
+        "Reviews": product.reviewCount ? `${product.reviewCount} reviews` : "No reviews yet"
+      },
+      images: [
+        product.imageUrl,
+        product.imageUrl.replace('w=400&h=400', 'w=600&h=600'),
+        product.imageUrl.replace('w=400&h=400', 'w=800&h=800')
+      ]
+    };
+
+    return detailedProduct;
+  }
+};
+
+let cart: ProductSummary[] = []; // In-memory cart for mock API
+
+export const mockCartApi = {
+  getCart: async (): Promise<ProductSummary[]> => {
+    await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
+    return [...cart]; // Return a copy to prevent direct modification
+  },
+
+  addItemToCart: async (productId: string, quantity: number = 1): Promise<ProductSummary[]> => {
+    await new Promise(resolve => setTimeout(resolve, 300)); // Simulate network delay
+    
+    const productToAdd = mockProducts.find(p => p.id === productId);
+    if (!productToAdd) {
+      throw new Error(`Product with id ${productId} not found`);
+    }
+
+    const existingItemIndex = cart.findIndex(item => item.id === productId);
+
+    if (existingItemIndex > -1) {
+      // Update quantity if item already exists
+      cart = cart.map((item, index) =>
+        index === existingItemIndex
+          ? { ...item, quantity: (item.quantity || 0) + quantity }
+          : item
+      );
+    } else {
+      // Add new item to cart
+      cart = [...cart, { ...productToAdd, quantity }];
+    }
+    
+    console.log(`Mock API: Added product ${productId} with quantity ${quantity} to cart. Current cart:`, cart);
+    return [...cart];
+  },
+
+  updateCartItemQuantity: async (productId: string, quantity: number): Promise<ProductSummary[]> => {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    cart = cart.map(item =>
+      item.id === productId ? { ...item, quantity } : item
+    ).filter(item => (item.quantity || 0) > 0); // Remove if quantity becomes 0 or less
+    
+    console.log(`Mock API: Updated product ${productId} quantity to ${quantity}. Current cart:`, cart);
+    return [...cart];
+  },
+
+  removeCartItem: async (productId: string): Promise<ProductSummary[]> => {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    cart = cart.filter(item => item.id !== productId);
+    
+    console.log(`Mock API: Removed product ${productId} from cart. Current cart:`, cart);
+    return [...cart];
+  },
+
+  clearCart: async (): Promise<ProductSummary[]> => {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    cart = [];
+    console.log(`Mock API: Cart cleared. Current cart:`, cart);
+    return [];
   }
 };

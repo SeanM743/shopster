@@ -1,0 +1,8 @@
+/home/seanmah/ecommerce/apps/cart-service/src/main/java/com/shopster/cart/domain/CartItem.java
+/home/seanmah/ecommerce/apps/cart-service/src/main/java/com/shopster/cart/dto/AddItemRequest.java
+/home/seanmah/ecommerce/apps/cart-service/src/main/java/com/shopster/cart/service/CartService.java
+/home/seanmah/ecommerce/apps/cart-service/src/main/java/com/shopster/cart/repository/CartRepository.java
+/home/seanmah/ecommerce/apps/cart-service/src/main/java/com/shopster/cart/controller/CartController.java
+/home/seanmah/ecommerce/apps/cart-service/src/main/java/com/shopster/cart/dto/UpdateItemRequest.java
+/home/seanmah/ecommerce/apps/cart-service/src/main/java/com/shopster/cart/domain/Cart.java
+/home/seanmah/ecommerce/apps/cart-service/src/main/java/com/shopster/cart/CartServiceApplication.java

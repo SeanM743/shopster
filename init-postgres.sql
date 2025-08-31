@@ -1,0 +1,1 @@
+CREATE DATABASE shopster_membership_dev;

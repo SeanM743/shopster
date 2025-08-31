@@ -1,5 +1,21 @@
-version: '3.8'
+
 services:
+  postgres:
+    image: postgres:16
+    container_name: shopster-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: shopster_users
+      POSTGRES_USER: shopster_user
+      POSTGRES_PASSWORD: shopster_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-postgres.sql:/docker-entrypoint-initdb.d/init-postgres.sql:ro
+    networks:
+      - shopster-network
+
   mongodb:
     image: mongo:7.0
     container_name: shopster-mongodb
@@ -27,7 +43,7 @@ services:
       - shopster-network
 
   product-service:
-    build: 
+    build:
       context: ./apps/product-service
       dockerfile: Dockerfile
     container_name: shopster-product-service
@@ -42,24 +58,61 @@ services:
     networks:
       - shopster-network
 
-  bff-orchestration:
-    build: 
-      context: ./apps/bff-orchestration
+  user-service:
+    build:
+      context: ./apps/user-service
       dockerfile: Dockerfile
-    container_name: shopster-bff-orchestration
+    container_name: shopster-user-service
     restart: unless-stopped
     ports:
       - "8081:8081"
     environment:
       SPRING_PROFILES_ACTIVE: dev
-      SERVICES_PRODUCT_SERVICE_URL: http://product-service:8082
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/shopster_users
+      SPRING_DATASOURCE_USERNAME: shopster_user
+      SPRING_DATASOURCE_PASSWORD: shopster_password
+    depends_on:
+      - postgres
+    networks:
+      - shopster-network
+
+  membership-service:
+    build:
+      context: ./apps/membership-service
+      dockerfile: Dockerfile
+    container_name: shopster-membership-service
+    restart: unless-stopped
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/shopster_membership_dev
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: shopster_dev_password
+    depends_on:
+      - postgres
+    networks:
+      - shopster-network
+
+  api-gateway:
+    build:
+      context: ./apps/api-gateway
+      dockerfile: Dockerfile
+    container_name: shopster-api-gateway
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
     depends_on:
       - product-service
+      - user-service
+      - membership-service
     networks:
       - shopster-network
 
   frontend:
-    build: 
+    build:
       context: ./apps/frontend
       dockerfile: Dockerfile
     container_name: shopster-frontend
@@ -67,13 +120,15 @@ services:
     ports:
       - "3000:3000"
     environment:
-      REACT_APP_BFF_URL: http://localhost:8081
+      REACT_APP_API_URL: http://localhost:8080
     depends_on:
-      - bff-orchestration
+      - api-gateway
     networks:
       - shopster-network
 
 volumes:
+  postgres_data:
+    driver: local
   mongodb_data:
     driver: local
   redis_data:
