@@ -17,6 +17,14 @@ public class AddItemRequest {
     @Min(0)
     private double price;
 
+    @NotBlank
+    private String imageUrl;
+
+    @NotBlank
+    private String brand;
+
+    private boolean inStock;
+
     public String getProductId() {
         return productId;
     }
@@ -47,5 +55,29 @@ public class AddItemRequest {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getBrand() {
+        return brand;
+    }
+
+    public void setBrand(String brand) {
+        this.brand = brand;
+    }
+
+    public boolean isInStock() {
+        return inStock;
+    }
+
+    public void setInStock(boolean inStock) {
+        this.inStock = inStock;
     }
 }

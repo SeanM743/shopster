@@ -4,6 +4,8 @@ import com.shopster.cart.domain.Cart;
 import com.shopster.cart.domain.CartItem;
 import com.shopster.cart.dto.AddItemRequest;
 import com.shopster.cart.repository.CartRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,8 @@ public class CartService {
         return cartRepository.findById(userId).orElse(new Cart(userId));
     }
 
+    private static final Logger logger = LoggerFactory.getLogger(CartService.class);
+
     public Cart addItemToCart(String userId, AddItemRequest addItemRequest) {
         Cart cart = getCart(userId);
         Optional<CartItem> existingItem = cart.getItems().stream()
@@ -31,14 +35,37 @@ public class CartService {
                 .findFirst();
 
         if (existingItem.isPresent()) {
+            logger.debug("Updating existing item quantity for product ID: {}", addItemRequest.getProductId());
             existingItem.get().setQuantity(existingItem.get().getQuantity() + addItemRequest.getQuantity());
         } else {
+            logger.debug("Creating new cart item with productId: {}, productName: {}, quantity: {}, price: {}, imageUrl: {}, brand: {}, inStock: {}",
+                    addItemRequest.getProductId(),
+                    addItemRequest.getProductName(),
+                    addItemRequest.getQuantity(),
+                    addItemRequest.getPrice(),
+                    addItemRequest.getImageUrl(),
+                    addItemRequest.getBrand(),
+                    addItemRequest.isInStock());
+            
             CartItem newItem = new CartItem(
                     addItemRequest.getProductId(),
                     addItemRequest.getProductName(),
                     addItemRequest.getQuantity(),
-                    BigDecimal.valueOf(addItemRequest.getPrice())
+                    BigDecimal.valueOf(addItemRequest.getPrice()),
+                    addItemRequest.getImageUrl(),
+                    addItemRequest.getBrand(),
+                    addItemRequest.isInStock()
             );
+            
+            logger.debug("Created CartItem: productId={}, productName={}, quantity={}, price={}, imageUrl={}, brand={}, inStock={}",
+                    newItem.getProductId(),
+                    newItem.getProductName(),
+                    newItem.getQuantity(),
+                    newItem.getPrice(),
+                    newItem.getImageUrl(),
+                    newItem.getBrand(),
+                    newItem.isInStock());
+            
             cart.getItems().add(newItem);
         }
 

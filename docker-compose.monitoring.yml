@@ -1,7 +1,6 @@
 # Additional monitoring services
 # Run with: docker-compose -f docker-compose.yml -f docker-compose.monitoring.yml up
 
-version: '3.8'
 services:
   prometheus:
     image: prom/prometheus:latest
@@ -11,14 +10,11 @@ services:
       - "9090:9090"
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
       - '--web.console.libraries=/etc/prometheus/console_libraries'
       - '--web.console.templates=/etc/prometheus/consoles'
-    networks:
-      - shopster-network
 
   grafana:
     image: grafana/grafana:latest
@@ -30,12 +26,18 @@ services:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=shopster123
     volumes:
-      - grafana_data:/var/lib/grafana
       - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
       - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
-    networks:
-      - shopster-network
 
-volumes:
-  prometheus_data:
-  grafana_data:
+  monitoring-dashboard:
+    build:
+      context: ./apps/monitoring-dashboard
+      dockerfile: Dockerfile
+    container_name: shopster-monitoring-dashboard
+    restart: unless-stopped
+    ports:
+      - "3002:3002"
+    environment:
+      - PROMETHEUS_URL=http://prometheus:9090
+    depends_on:
+      - prometheus

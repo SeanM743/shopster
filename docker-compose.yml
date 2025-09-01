@@ -76,6 +76,23 @@ services:
     networks:
       - shopster-network
 
+  cart-service:
+    build:
+      context: ./apps/cart-service
+      dockerfile: Dockerfile
+    container_name: shopster-cart-service
+    restart: unless-stopped
+    ports:
+      - "8085:8085"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+    depends_on:
+      - redis
+    networks:
+      - shopster-network
+
   membership-service:
     build:
       context: ./apps/membership-service

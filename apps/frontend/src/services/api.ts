@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+const API_BASE_URL = process.env.REACT_APP_BFF_URL || 'http://localhost:8080';
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
@@ -10,6 +10,13 @@ export const api = axios.create({
 // Add request/response interceptors for debugging
 api.interceptors.request.use(
   (config) => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      if (user && user.token) {
+        config.headers.Authorization = `Bearer ${user.token}`;
+      }
+    }
     console.log('API Request:', config.method?.toUpperCase(), config.url);
     return config;
   },
@@ -418,6 +425,25 @@ export const productApi = {
       viewAllLink: "/products/trending"
     };
   }
+};
+
+export const cartApi = {
+  getCart: async (userId: string) => {
+    const response = await api.get(`/api/v1/cart/${userId}`);
+    return response.data;
+  },
+  addItem: async (userId: string, item: { productId: string; productName: string; price: number; imageUrl: string; brand: string; inStock: boolean; quantity: number }) => {
+    const response = await api.post(`/api/v1/cart/${userId}/items`, item);
+    return response.data;
+  },
+  updateItem: async (userId: string, itemId: string, quantity: number) => {
+    const response = await api.put(`/api/v1/cart/${userId}/items/${itemId}`, { quantity });
+    return response.data;
+  },
+  removeItem: async (userId: string, itemId: string) => {
+    const response = await api.delete(`/api/v1/cart/${userId}/items/${itemId}`);
+    return response.data;
+  },
 };
 
 export default api;

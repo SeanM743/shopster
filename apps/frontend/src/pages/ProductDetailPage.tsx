@@ -275,13 +275,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = () => {
                 <button
                   onClick={() => {
                     if (product) {
-                      const cartProduct = {
-                        id: product.id,
-                        name: product.name,
-                        price: effectivePrice,
-                        imageUrl: product.imageUrl,
-                      };
-                      addToCart(cartProduct, 1);
+                      addToCart(product.id, product.name, effectivePrice, product.imageUrl, product.brand, product.inStock, 1);
                       navigate('/cart');
                     }
                   }}

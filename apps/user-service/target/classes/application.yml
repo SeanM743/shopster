@@ -33,7 +33,7 @@ spring:
       password: admin123
 
 server:
-  port: 8081
+  port: 8083
   servlet:
     context-path: /
 
@@ -81,19 +81,14 @@ spring:
       on-profile: dev
       
   datasource:
-    url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
-    username: sa
-    password: 
+    url: jdbc:postgresql://localhost:5432/shopster_users_dev
+    username: shopster_user
+    password: shopster_password
+    driver-class-name: org.postgresql.Driver
     
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
-      
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: validate
     show-sql: true
 
 logging:

@@ -29,7 +29,7 @@ lsof -i :8083  # User Service
 
 # Database access
 mongo shopster_products_dev  # MongoDB
-psql -d shopster_users_dev   # PostgreSQL
+psql -d shopster_users   # PostgreSQL
 
 # Git workflow
 git status && git add . && git commit -m "Brief description"

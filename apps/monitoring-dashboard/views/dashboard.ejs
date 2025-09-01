@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopster Application Health Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --success-color: #4cc9f0;
+            --warning-color: #f72585;
+            --danger-color: #e63946;
+            --dark-color: #1d3557;
+            --light-color: #f1faee;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--dark-color));
+            color: white;
+            padding: 1.5rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 1.5rem;
+            border: none;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .service-card.UP {
+            border-left: 5px solid #28a745;
+        }
+        
+        .service-card.DOWN {
+            border-left: 5px solid #dc3545;
+        }
+        
+        .service-card.unknown {
+            border-left: 5px solid #6c757d;
+        }
+        
+        .metric-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+        
+        .metric-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        
+        .status-up {
+            background-color: #28a745;
+        }
+        
+        .status-down {
+            background-color: #dc3545;
+        }
+        
+        .status-unknown {
+            background-color: #6c757d;
+        }
+        
+        .refresh-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+        
+        .refresh-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .last-updated {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .section-title {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-color);
+        }
+        
+        .overview-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .overview-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .overview-card .bi {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .overview-card.up .bi {
+            color: #28a745;
+        }
+        
+        .overview-card.down .bi {
+            color: #dc3545;
+        }
+        
+        .overview-card.unknown .bi {
+            color: #6c757d;
+        }
+        
+        .overview-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        .overview-label {
+            font-size: 1rem;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1><i class="bi bi-activity"></i> Shopster Health Dashboard</h1>
+                    <p class="mb-0">Real-time monitoring of all application services</p>
+                </div>
+                <div class="d-flex align-items-center">
+                    <button id="refreshBtn" class="btn refresh-btn me-3">
+                        <i class="bi bi-arrow-clockwise"></i> Refresh
+                    </button>
+                    <div class="last-updated">
+                        Last updated: <span id="lastUpdated"><%= lastUpdated %></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Overview Cards -->
+        <div class="overview-cards">
+            <div class="overview-card up">
+                <i class="bi bi-check-circle"></i>
+                <div class="overview-value" id="upCount">0</div>
+                <div class="overview-label">Services Up</div>
+            </div>
+            <div class="overview-card down">
+                <i class="bi bi-exclamation-circle"></i>
+                <div class="overview-value" id="downCount">0</div>
+                <div class="overview-label">Services Down</div>
+            </div>
+            <div class="overview-card unknown">
+                <i class="bi bi-question-circle"></i>
+                <div class="overview-value" id="unknownCount">0</div>
+                <div class="overview-label">Unknown Status</div>
+            </div>
+            <div class="overview-card">
+                <i class="bi bi-speedometer2"></i>
+                <div class="overview-value" id="avgLatency">0ms</div>
+                <div class="overview-label">Avg Latency</div>
+            </div>
+        </div>
+
+        <!-- Services Section -->
+        <h2 class="section-title">Service Health</h2>
+        <div class="row" id="servicesContainer">
+            <% Object.keys(services).forEach(serviceName => { %>
+                <% const service = services[serviceName]; %>
+                <div class="col-lg-6 col-xl-4">
+                    <div class="card service-card <%= service.status || 'unknown' %>">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h5 class="card-title mb-0"><%= serviceName %></h5>
+                                <span class="status-indicator status-<%= (service.status || 'unknown').toLowerCase() %>"></span>
+                            </div>
+                            
+                            <div class="d-flex align-items-center mb-3">
+                                <span class="badge bg-<%= service.status === 'UP' ? 'success' : service.status === 'DOWN' ? 'danger' : 'secondary' %>">
+                                    <%= service.status || 'UNKNOWN' %>
+                                </span>
+                                <% if (service.latency) { %>
+                                    <small class="text-muted ms-2"><%= service.latency %>ms</small>
+                                <% } %>
+                            </div>
+                            
+                            <% if (service.requestRate !== undefined) { %>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <div class="metric-card">
+                                        <div class="metric-label">Requests/sec</div>
+                                        <div class="metric-value text-primary"><%= service.requestRate %></div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="metric-card">
+                                        <div class="metric-label">Errors/sec</div>
+                                        <div class="metric-value text-danger"><%= service.errorRate %></div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="metric-card">
+                                        <div class="metric-label">95th Latency</div>
+                                        <div class="metric-value text-warning"><%= service.latency95 %>ms</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="metric-card">
+                                        <div class="metric-label">Availability</div>
+                                        <div class="metric-value text-success">
+                                            <% if (parseFloat(service.errorRate) > 0) { %>
+                                                <%= (100 - (parseFloat(service.errorRate) / (parseFloat(service.requestRate) + parseFloat(service.errorRate)) * 100)).toFixed(2) %>%
+                                            <% } else { %>
+                                                100%
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <% } else { %>
+                            <div class="text-center py-4 text-muted">
+                                <i class="bi bi-database"></i>
+                                <p class="mb-0 mt-2">Database service metrics</p>
+                            </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // Connect to WebSocket
+        const socket = io();
+        
+        // Handle real-time updates
+        socket.on('healthUpdate', function(data) {
+            updateDashboard(data);
+        });
+        
+        // Update dashboard with new data
+        function updateDashboard(data) {
+            // Update last updated time
+            document.getElementById('lastUpdated').textContent = new Date(data.timestamp).toLocaleString();
+            
+            // Update overview counts
+            let upCount = 0, downCount = 0, unknownCount = 0, totalLatency = 0, latencyCount = 0;
+            
+            Object.keys(data.services).forEach(serviceName => {
+                const service = data.services[serviceName];
+                
+                // Update counts
+                if (service.status === 'UP') upCount++;
+                else if (service.status === 'DOWN') downCount++;
+                else unknownCount++;
+                
+                // Update latency average
+                if (service.latency95 && service.latency95 > 0) {
+                    totalLatency += parseFloat(service.latency95);
+                    latencyCount++;
+                }
+            });
+            
+            // Update overview cards
+            document.getElementById('upCount').textContent = upCount;
+            document.getElementById('downCount').textContent = downCount;
+            document.getElementById('unknownCount').textContent = unknownCount;
+            document.getElementById('avgLatency').textContent = latencyCount > 0 ? 
+                (totalLatency / latencyCount).toFixed(0) + 'ms' : '0ms';
+        }
+        
+        // Refresh button handler
+        document.getElementById('refreshBtn').addEventListener('click', function() {
+            location.reload();
+        });
+        
+        // Auto-refresh every 30 seconds
+        setInterval(function() {
+            location.reload();
+        }, 30000);
+    </script>
+</body>
+</html>

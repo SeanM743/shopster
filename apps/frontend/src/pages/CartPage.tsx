@@ -1,60 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useCart } from '../contexts/CartContext';
 import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
-
-interface CartItem {
-  id: string;
-  productId: string;
-  name: string;
-  brand: string;
-  imageUrl: string;
-  price: number;
-  quantity: number;
-  inStock: boolean;
-}
 
 const CartPage: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
-  
-  // Mock cart data - in real app would come from cart service
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: '1',
-      productId: '1',
-      name: 'iPhone 15 Pro',
-      brand: 'Apple',
-      imageUrl: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=400&fit=crop&crop=center',
-      price: 999.99,
-      quantity: 1,
-      inStock: true
-    },
-    {
-      id: '2',
-      productId: '3',
-      name: 'Nike Air Force 1',
-      brand: 'Nike',
-      imageUrl: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=400&fit=crop&crop=center',
-      price: 89.99,
-      quantity: 2,
-      inStock: true
-    }
-  ]);
+  const { cartItems, updateQuantity, removeItem, cartTotal } = useCart();
 
-  const updateQuantity = (id: string, newQuantity: number) => {
-    if (newQuantity < 1) return;
-    setCartItems(items =>
-      items.map(item =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
-    );
-  };
-
-  const removeItem = (id: string) => {
-    setCartItems(items => items.filter(item => item.id !== id));
-  };
-
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const subtotal = cartTotal;
   const shipping = subtotal > 35 ? 0 : 5.99; // Free shipping over $35
   const tax = subtotal * 0.08; // 8% tax
   const total = subtotal + shipping + tax;
@@ -147,6 +101,11 @@ const CartPage: React.FC = () => {
                             {item.name}
                           </Link>
                           <p className="text-sm text-gray-500">{item.brand}</p>
+                          {item.inStock ? (
+                            <p className="text-sm text-green-600">In Stock</p>
+                          ) : (
+                            <p className="text-sm text-red-600">Out of Stock</p>
+                          )}
                           <p className="text-sm font-medium text-gray-900">
                             ${item.price.toFixed(2)}
                           </p>

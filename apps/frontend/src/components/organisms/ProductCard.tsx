@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useCart } from '../../contexts/CartContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 export interface Product {
   id: string;
@@ -21,7 +23,10 @@ interface ProductCardProps {
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const navigate = useNavigate();
+  const { addToCart } = useCart();
+  const { user } = useAuth();
   const [imageError, setImageError] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
   const formatPrice = (price: number) => `$${price.toFixed(2)}`;
   const hasDiscount = product.salePrice && product.salePrice < product.price;
   const effectivePrice = hasDiscount ? product.salePrice : product.price;
@@ -30,11 +35,37 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     navigate(`/product/${product.id}`);
   };
 
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (user?.id) {
+      addToCart(product.id, product.name, product.price, product.imageUrl, product.brand, product.inStock, 1);
+      // Show feedback modal
+      setShowFeedback(true);
+      // Hide feedback after 2 seconds
+      setTimeout(() => {
+        setShowFeedback(false);
+      }, 2000);
+    } else {
+      // Optionally, redirect to login or show a message
+      navigate('/login');
+    }
+  };
+
   return (
     <div 
-      className="bg-white rounded-xl border border-gray-200 hover:border-primary-200 hover:shadow-xl transition-all duration-300 ease-in-out overflow-hidden group cursor-pointer flex flex-col h-full transform hover:-translate-y-2 will-change-transform"
+      className="bg-white rounded-xl border border-gray-200 hover:border-primary-200 hover:shadow-xl transition-all duration-300 ease-in-out overflow-hidden group cursor-pointer flex flex-col h-full transform hover:-translate-y-2 will-change-transform relative"
       onClick={handleCardClick}
     >
+      {/* Feedback Modal */}
+      {showFeedback && (
+        <div className="absolute inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-10 rounded-xl">
+          <div className="bg-white rounded-lg p-4 shadow-lg text-center max-w-[80%]">
+            <div className="text-green-600 font-bold text-sm">✓ Added to Cart</div>
+            <div className="text-gray-700 text-xs mt-1 truncate">{product.name}</div>
+          </div>
+        </div>
+      )}
+
       {/* Product Image */}
       <div className="relative h-48 bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
         {!imageError && product.imageUrl ? (
@@ -158,7 +189,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               ? 'bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white shadow-md hover:shadow-lg focus:ring-2 focus:ring-primary-300 focus:outline-none'
               : 'bg-gray-200 text-gray-500 cursor-not-allowed'
           }`}
-          onClick={(e) => e.stopPropagation()}
+          onClick={handleAddToCart}
           disabled={!product.inStock}
           aria-label={`${product.inStock ? 'Add' : 'Out of stock for'} ${product.name} ${product.inStock ? 'to cart' : ''}`}
         >

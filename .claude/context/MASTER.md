@@ -5,21 +5,23 @@
 
 ### Current Architecture (LIVE)
 ```
-React Frontend (3000) → Product Service (8082) → MongoDB
-                     ↘  User Service (8083) → PostgreSQL  
-                     ↘  Cart Service (8085) → Redis
-                     ↘  Membership Service (8084) → PostgreSQL
+React Frontend (3000) → API Gateway (8080) → Product Service (8082) → MongoDB
+                                          ↘  User Service (8081) → PostgreSQL  
+                                          ↘  Cart Service (8085) → Redis
+                                          ↘  Membership Service (8084) → PostgreSQL
 ```
 
 ### Live Services Status
 - ✅ **Frontend**: React app on localhost:3000 (with auth, product grid, membership pages)
+- ✅ **API Gateway**: Spring Cloud Gateway on localhost:8080 (routing to microservices)
 - ✅ **Product Service**: Spring Boot on localhost:8082 (MongoDB integrated, 15 products in grid)
-- ✅ **User Service**: Authentication & user management on localhost:8083
+- ✅ **User Service**: Authentication & user management on localhost:8081
 - ✅ **Cart Service**: Shopping cart with Redis on localhost:8085
 - ✅ **Membership Service**: Shopster+ subscriptions on localhost:8084
 - ✅ **MongoDB**: Product catalog with real data
 - ✅ **Redis**: Cart persistence
 - ✅ **PostgreSQL**: User and membership data
+- ✅ **Monitoring**: Prometheus (9090), Grafana (3001), Custom Dashboard (3002)
 
 ## 🛠 Tech Stack (Production)
 | Layer | Technology | Version | Purpose |
